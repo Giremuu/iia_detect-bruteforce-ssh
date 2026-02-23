@@ -55,15 +55,18 @@ Action :
 ---
 
 ## Procédure de test
-
-Lancer le détecteur en mode suivi :
+Si vous avez cloné ce repo :
+- modifié et renommé le .env en fonction de votre environnement
+- modifié et renommé le config.yaml en fonction de votre environnement
+- Lancer le détecteur en mode infini :
 ```bash
 sudo -E .venv/bin/python main.py --follow
 ```
-Générer des échecs d’authentification SSH depuis la même machine :
+- Générer des échecs d’authentification SSH depuis la même machine ou une autre :
 ```bash
 ssh fakeuser@localhost
 ```
+
 Vérifier :
 - Les événements sont visibles dans journalctl
 - Une alerte est générée après dépassement du seuil
