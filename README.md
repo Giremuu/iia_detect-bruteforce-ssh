@@ -89,13 +89,13 @@ Diagramme de classes UML représentant la conception objet (LogReader, AuthEvent
 
 
 ## Steps :
--[] MCD
--[] MLD
--[] MPD
--[] Base de données (PHPMyAdmin et BDD en local)
--[] Code Python
--[] Github CI/CD
--[] PyTest
+- [x] MCD
+- [x] MLD
+- [x] MPD
+- [x] Base de données (PHPMyAdmin et BDD en local)
+- [ ] Code Python
+- [ ] Github CI/CD
+- [ ] PyTest
 
 
 - userssh accessible à la BDD MariaDB
