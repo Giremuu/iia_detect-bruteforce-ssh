@@ -1,7 +1,7 @@
 # Détecteur de Bruteforce SSH (Blue Team)
 
 
-## 1. Présentation
+## Présentation
 
 Ce projet est un outil permettant de détecter des tentatives de bruteforce SSH à partir des journaux système (journald) sous Debian 13.
 Il analyse les échecs d’authentification SSH sur une fenêtre temporelle et génère des alertes lorsqu’un comportement suspect est détecté.
@@ -12,29 +12,23 @@ Objectifs pédagogiques :
 - Modéliser les données (Merise) et la conception objet (UML) en suivant les principes du cours Gestion SI
 
 
-## 2. Fonctionnalités
+## Fonctionnalités
 
 Collecte des logs SSH via journalctl
 Parsing des événements d’authentification (succès/échecs)
 Détection de bruteforce basée sur seuils (X échecs en Y minutes)
 Génération d’alertes
-Export possible des alertes (console, fichier JSON, autre ?)
 
 
-## 3. Environnement et prérequis
+## Environnement et prérequis
 
 OS : Debian 13
 Service SSH actif (openssh-server)
 Accès aux logs systemd (droits sudo pour lecture journald)
-Langage d’implémentation : Python
-
-Installation minimale :
-- sudo apt update
-- sudo apt install -y openssh-server
-- sudo systemctl enable --now ssh
+Langage : Python
 
 
-## 4. Sources de logs
+## Sources de logs
 
 Le projet utilise journald (par défaut sur Debian 13) :
 - sudo journalctl -u ssh
@@ -42,11 +36,11 @@ Le projet utilise journald (par défaut sur Debian 13) :
 Mode temps réel :
 - sudo journalctl -f -u ssh
 
-Export en JSON (pour le parsing) :
+Export en JSON :
 - sudo journalctl -u ssh -o json
 
 
-## 5. Règle de détection (exemple)
+## Règle de détection
 
 Condition :
 - 5 tentatives d’authentification échouées depuis la même adresse IP en moins de 2 minutes
@@ -55,9 +49,9 @@ Action :
 - Génération d’une alerte de type BRUTEFORCE_SSH_DETECTED
 
 
-## 6. Procédure de test
+## Procédure de test
 
-Lancer le collecteur/détecteur en mode suivi :
+Lancer le détecteur en mode suivi :
 - sudo python3 main.py --follow
 
 Générer des échecs SSH depuis le même PC :
@@ -65,20 +59,16 @@ Générer des échecs SSH depuis le même PC :
 
 Vérifier :
 - Les événements apparaissent via journalctl
-- Une alerte est générée après dépassement du seuil
+- Une alerte est générée après dépassement du seuil et sera dans la BDD
 
 
-## 7. Modélisation
+## Modélisation
 
 Merise décrivant les entités principales (Événement, Adresse IP, Règle, Alerte, Hôte) :
 - MCD
 - MLD
-Diagramme de classes UML représentant la conception objet (LogReader, AuthEvent, Detector, Rule, Alert, Reporter)
+- MPD
 
-
-
-- >>> LOGS - TEMPS DE RETENTION
-- >>> Utilisateurs signent charte info
 
 ## Stacks / Outils AGL :
 - Github avec CI/CD pour tests de lint ect
@@ -93,9 +83,7 @@ Diagramme de classes UML représentant la conception objet (LogReader, AuthEvent
 - [x] MLD
 - [x] MPD
 - [x] Base de données (PHPMyAdmin et BDD en local)
-- [ ] Code Python
+- [x] Création de l'utilisateur userssh pour gérer la BDD
+- [X] Code Python
 - [ ] Github CI/CD
 - [ ] PyTest
-
-
-- userssh accessible à la BDD MariaDB

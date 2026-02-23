@@ -1,0 +1,18 @@
+# Exemple d'un config.yaml :
+journald:
+  unit: ssh
+  follow: true
+
+detection:
+  threshold: 5
+  window_seconds: 120
+
+db:
+  host: "${DB_HOST}"
+  user: "${DB_USER}"
+  database: "${DB_NAME}"
+
+host:
+  adresse_mac: "00:00:00:00:00:00"
+  adresse_ip: "127.0.0.1"
+  os: "Debian 13"
