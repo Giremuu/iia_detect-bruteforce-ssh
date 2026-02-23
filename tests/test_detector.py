@@ -33,7 +33,13 @@ def test_window_expires_old_events():
     base = datetime(2026, 1, 1, tzinfo=timezone.utc)
 
     assert det.feed(AuthEvent(base, "1.2.3.4", "u", "FAIL", "")) is None
-    assert det.feed(AuthEvent(base + timedelta(seconds=5), "1.2.3.4", "u", "FAIL", "")) is None
+    assert (
+        det.feed(AuthEvent(base + timedelta(seconds=5), "1.2.3.4", "u", "FAIL", ""))
+        is None
+    )
 
     # event outside window -> should not reach threshold
-    assert det.feed(AuthEvent(base + timedelta(seconds=40), "1.2.3.4", "u", "FAIL", "")) is None
+    assert (
+        det.feed(AuthEvent(base + timedelta(seconds=40), "1.2.3.4", "u", "FAIL", ""))
+        is None
+    )
