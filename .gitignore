@@ -25,3 +25,9 @@ reports/
 .DS_Store
 .vscode/
 .idea/
+
+# Doxygen
+html/
+latex/
+docs/
+doxygen/
