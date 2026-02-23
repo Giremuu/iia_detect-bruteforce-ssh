@@ -16,15 +16,27 @@ from src.config import load_config
 from src.journald_reader import iter_journald_json
 from src.parser import parse_auth_event
 from src.detector import SlidingWindowDetector, RuleConfig
-from src.db import Database, ensure_host, get_or_create_rule, insert_alert, insert_report
+from src.db import (
+    Database,
+    ensure_host,
+    get_or_create_rule,
+    insert_alert,
+    insert_report,
+)
 
 
 def main() -> int:
-# Lecture des options de la CLI
+    # Lecture des options de la CLI
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default="config.yaml")                                          # Permet de spécifier un chemin vers le conf.yaml
-    ap.add_argument("--follow", action="store_true", help="follow journald")                    # Permet de lancer en continue (pour tests)
-    ap.add_argument("--once", action="store_true", help="read current logs then exit")          # Permet de lire une fois les logs et reporter l'info (pour crontab)
+    ap.add_argument(
+        "--config", default="config.yaml"
+    )  # Permet de spécifier un chemin vers le conf.yaml
+    ap.add_argument(
+        "--follow", action="store_true", help="follow journald"
+    )  # Permet de lancer en continue (pour tests)
+    ap.add_argument(
+        "--once", action="store_true", help="read current logs then exit"
+    )  # Permet de lire une fois les logs et reporter l'info (pour crontab)
     args = ap.parse_args()
 
     cfg = load_config(args.config)
@@ -43,7 +55,9 @@ def main() -> int:
     # Récupération des creds du .env pour accéder à la DB
     db_password = os.getenv("DB_PASSWORD")
     if not db_password:
-        raise SystemExit("DB_PASSWORD is not set. Use a .env file or export DB_PASSWORD.")
+        raise SystemExit(
+            "DB_PASSWORD is not set. Use a .env file or export DB_PASSWORD."
+        )
 
     db = Database(
         host=cfg.db.host,
@@ -89,7 +103,9 @@ def main() -> int:
                 donnees=alert["report_json"],
             )
 
-            print(f"[ALERTE] Bruteforce suspect IP={alert['ip']} count={alert['count']}")
+            print(
+                f"[ALERTE] Bruteforce suspect IP={alert['ip']} count={alert['count']}"
+            )
 
     return 0
 

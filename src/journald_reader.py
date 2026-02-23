@@ -7,7 +7,10 @@ import json
 import subprocess
 from typing import Dict, Iterator, Any
 
-def iter_journald_json(unit: str = "ssh", follow: bool = True) -> Iterator[Dict[str, Any]]:
+
+def iter_journald_json(
+    unit: str = "ssh", follow: bool = True
+) -> Iterator[Dict[str, Any]]:
     # Construction de la commande pour journalctl
     cmd = ["journalctl", "-u", unit, "-o", "json"]
     if follow:

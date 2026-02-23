@@ -9,16 +9,19 @@ from collections import deque
 from typing import Deque, Dict, Optional, Any
 import json
 
+
 @dataclass(frozen=True)
 class RuleConfig:
     threshold: int
     window_seconds: int
+
 
 class SlidingWindowDetector:
     """
     Tracks FAIL events per IP in a sliding time window.
     Emits an alert when threshold is reached.
     """
+
     def __init__(self, cfg: RuleConfig) -> None:
         self.cfg = cfg
         self.failures: Dict[str, Deque[datetime]] = {}

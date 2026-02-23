@@ -13,6 +13,7 @@ FAIL_PATTERNS = [
     re.compile(r"Invalid user (?P<user>\S+) from (?P<ip>\S+)"),
 ]
 
+
 @dataclass(frozen=True)
 # Structure de l'objet AuthEvent
 class AuthEvent:
@@ -21,6 +22,7 @@ class AuthEvent:
     username: str
     outcome: str
     message: str
+
 
 def _journald_ts(entry: Dict[str, Any]) -> datetime:
     # Conversion du timestamp journald en DATETIME pour Python

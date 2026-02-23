@@ -9,6 +9,7 @@ from typing import Optional
 from datetime import datetime
 import pymysql
 
+
 # Wrapper simple autour de PyMySQL
 @dataclass
 class Database:
@@ -44,12 +45,16 @@ class Database:
             cur.execute(sql, params)
             return cur
 
+
 # Récupère ou créer l’hôte
 def ensure_host(db: Database, adresse_mac: str, adresse_ip: str, os_name: str) -> int:
     cur = db.execute("SELECT id_hote FROM hote WHERE adresse_mac=%s", (adresse_mac,))
     row = cur.fetchone()
     if row:
-        db.execute("UPDATE hote SET adresse_ip=%s, os=%s WHERE id_hote=%s", (adresse_ip, os_name, row["id_hote"]))
+        db.execute(
+            "UPDATE hote SET adresse_ip=%s, os=%s WHERE id_hote=%s",
+            (adresse_ip, os_name, row["id_hote"]),
+        )
         return int(row["id_hote"])
 
     cur = db.execute(
@@ -57,6 +62,7 @@ def ensure_host(db: Database, adresse_mac: str, adresse_ip: str, os_name: str) -
         (adresse_mac, adresse_ip, os_name),
     )
     return int(cur.lastrowid)
+
 
 # Récupère ou créer une règle
 def get_or_create_rule(db: Database, conditions: str) -> int:
@@ -68,13 +74,17 @@ def get_or_create_rule(db: Database, conditions: str) -> int:
     cur = db.execute("INSERT INTO regle (conditions) VALUES (%s)", (conditions,))
     return int(cur.lastrowid)
 
+
 # Créer une alerte
-def insert_alert(db: Database, id_hote: int, id_regle: int, date_declenchement: datetime) -> int:
+def insert_alert(
+    db: Database, id_hote: int, id_regle: int, date_declenchement: datetime
+) -> int:
     cur = db.execute(
         "INSERT INTO alerte (id_hote, id_regle, date_declenchement) VALUES (%s,%s,%s)",
         (id_hote, id_regle, date_declenchement),
     )
     return int(cur.lastrowid)
+
 
 # Créer un rapport
 def insert_report(db: Database, id_alerte: int, fmt: str, donnees: str) -> int:

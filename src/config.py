@@ -8,6 +8,7 @@ import os
 import yaml
 from dotenv import load_dotenv
 
+
 # Variables d'env
 def _expand_env(value: str) -> str:
     # support "${VAR}"
@@ -16,16 +17,19 @@ def _expand_env(value: str) -> str:
         return os.getenv(var, "")
     return value
 
+
 # Dataclasses de configuration :
 @dataclass
 class JournaldCfg:
     unit: str = "ssh"
     follow: bool = True
 
+
 @dataclass
 class DetectionCfg:
     threshold: int = 5
     window_seconds: int = 120
+
 
 @dataclass
 class DbCfg:
@@ -33,11 +37,13 @@ class DbCfg:
     user: str = "sshmon"
     database: str = "ssh_bruteforce"
 
+
 @dataclass
 class HostCfg:
     adresse_mac: str = "00:00:00:00:00:00"
     adresse_ip: str = "127.0.0.1"
     os: str = "Debian"
+
 
 @dataclass
 class AppCfg:
@@ -45,6 +51,7 @@ class AppCfg:
     detection: DetectionCfg
     db: DbCfg
     host: HostCfg
+
 
 # Chargement du .env
 def load_config(path: str) -> AppCfg:
