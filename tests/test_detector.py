@@ -11,7 +11,7 @@ def _ev(ts, ip="1.2.3.4", user="u", outcome="FAIL", msg=""):
 
 def test_success_does_not_count_toward_threshold():
     """
-    Attendu (contrat courant en Blue Team) : seuls les FAIL comptent.
+    Seuls les FAIL comptent.
     """
     rule = RuleConfig(threshold=5, window_seconds=120)
     det = SlidingWindowDetector(rule)
@@ -61,8 +61,8 @@ def test_events_from_different_users_same_ip():
 
 def test_non_fail_outcomes_do_not_crash_and_do_not_alert():
     """
-    Robustesse : outcomes inattendus ne doivent pas faire planter le détecteur
-    et ne doivent pas déclencher d'alerte.
+    Outcomes inattendus ne doivent pas faire planter le détecteur
+    et ne doivent pas déclencher d'alerte normalement
     """
     rule = RuleConfig(threshold=2, window_seconds=60)
     det = SlidingWindowDetector(rule)
@@ -77,7 +77,7 @@ def test_non_fail_outcomes_do_not_crash_and_do_not_alert():
 
 
 @pytest.mark.xfail(
-    reason="Dépend du contrat: certains systèmes émettent une alerte à chaque nouvel événement au-dessus du seuil."
+    reason="Certains systèmes émettent une alerte à chaque nouvel événement au-dessus du seuil."
 )
 def test_alert_only_on_crossing_threshold_optional():
     """

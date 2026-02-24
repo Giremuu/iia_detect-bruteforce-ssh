@@ -9,6 +9,11 @@ Mettre en place une CI simple qui s’exécute à chaque `push` / `pull_request`
 
 ## Outils utilisés
 
+### venv
+- `python3 -m venv .venv`
+- `source .venv/bin/activate`
+- `python -m pip install -r requirements.txt -r requirements-dev.txt`
+
 ### Ruff
 Ruff est un outil rapide qui regroupe :
 - **lint** : détecte erreurs et mauvaises pratiques (imports inutiles, variables non utilisées, etc.)
@@ -21,7 +26,7 @@ Commandes utilisées :
 
 ### PyTest
 PyTest exécute les tests unitaires contenus dans `tests/` :
-- `pytest -q` : lance les tests en mode compact
+- `pytest -q` : lance les tests
 
 ---
 
@@ -43,7 +48,7 @@ testpaths = tests
 ## Github Action :
 
 Le workflow :
-- tourne sur Ubuntu (runner GitHub)
+- tourne sur Ubuntu / Debian (runner GitHub)
 - teste plusieurs versions de Python (matrice)
 - installe les dépendances
 - lance Ruff + PyTest

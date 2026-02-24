@@ -36,7 +36,7 @@ def main() -> int:
     )  # Permet de lancer en continue (pour tests)
     ap.add_argument(
         "--once", action="store_true", help="read current logs then exit"
-    )  # Permet de lire une fois les logs et reporter l'info (pour crontab)
+    )  # Permet de lire une fois les logs et reporter l'info dans la BDD (pour crontab)
     args = ap.parse_args()
 
     cfg = load_config(args.config)

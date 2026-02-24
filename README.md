@@ -84,6 +84,7 @@ La modélisation des données suit la méthode Merise avec les entités principa
 - Hôte
 
 Livrables :
+Dans le dossier "GestionSI"
 - MCD (Modèle Conceptuel de Données)
 - MLD (Modèle Logique de Données)
 - MPD (Modèle Physique de Données)
@@ -95,5 +96,6 @@ Livrables :
 - VS Code : édition du code
 - Draw.io : schémas et modélisation
 - Python : langage principal
-- PyTest : tests automatisés
-- Ruff : linting et formatage
+- PyTest : framework de tests du code
+- Ruff : linting et formatage du code
+- Doxyfile : documentations (```doxygen Doxyfile``` - placé en gitignore pour ne pas surchargé le repo)
