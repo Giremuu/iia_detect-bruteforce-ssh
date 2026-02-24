@@ -4,8 +4,8 @@ journald:
   follow: true
 
 detection:
-  threshold: 5
-  window_seconds: 120
+  threshold: 5                  # Valeur du seuil de détection
+  window_seconds: 120           # Valeur en secondes pour la fenêtre de détection (Mode --once : va analyser les dernières 120 secondes)
 
 db:
   host: "${DB_HOST}"

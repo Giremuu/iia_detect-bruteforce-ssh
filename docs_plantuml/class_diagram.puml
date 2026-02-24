@@ -1,0 +1,91 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "src" {
+
+  class AuthEvent {
+    +ts: datetime
+    +ip: str
+    +username: str
+    +outcome: str
+    +message: str
+  }
+
+  class RuleConfig {
+    +threshold: int
+    +window_seconds: int
+  }
+
+  class SlidingWindowDetector {
+    -cfg: RuleConfig
+    -failures: Dict[str, Deque[datetime]]
+    +feed(ev): Optional[Dict[str, Any]]
+  }
+
+  class Database {
+    +host: str
+    +user: str
+    +password: str
+    +database: str
+    +__enter__(): Database
+    +__exit__(exc_type, exc, tb): None
+    +execute(sql: str, params=None)
+  }
+
+  class JournaldCfg {
+    +unit: str
+    +follow: bool
+  }
+
+  class DetectionCfg {
+    +threshold: int
+    +window_seconds: int
+  }
+
+  class DbCfg {
+    +host: str
+    +user: str
+    +database: str
+  }
+
+  class HostCfg {
+    +adresse_mac: str
+    +adresse_ip: str
+    +os: str
+  }
+
+  class AppCfg {
+    +journald: JournaldCfg
+    +detection: DetectionCfg
+    +db: DbCfg
+    +host: HostCfg
+  }
+
+  class parse_auth_event <<function>>
+  class iter_journald_json <<function>>
+  class load_config <<function>>
+
+  class ensure_host <<function>>
+  class get_or_create_rule <<function>>
+  class insert_alert <<function>>
+  class insert_report <<function>>
+}
+
+iter_journald_json ..> parse_auth_event : entry dict
+parse_auth_event ..> AuthEvent : crée
+SlidingWindowDetector ..> RuleConfig
+SlidingWindowDetector ..> AuthEvent : consomme
+SlidingWindowDetector ..> "alert dict" : produit
+
+load_config ..> AppCfg
+AppCfg *-- JournaldCfg
+AppCfg *-- DetectionCfg
+AppCfg *-- DbCfg
+AppCfg *-- HostCfg
+
+Database ..> ensure_host
+Database ..> get_or_create_rule
+Database ..> insert_alert
+Database ..> insert_report
+
+@enduml

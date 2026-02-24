@@ -1,0 +1,39 @@
+@startuml
+start
+
+:Lire arguments CLI;
+:Charger config (YAML + .env);
+:Déterminer follow/once;
+:Construire RuleConfig;
+:Initialiser SlidingWindowDetector;
+
+:Lire DB_PASSWORD;
+if (DB_PASSWORD absent ?) then (oui)
+  :Stop (erreur);
+  stop
+endif
+
+:Ouvrir connexion DB;
+:ensure_host();
+:get_or_create_rule();
+
+while (Entrées journald disponibles ?) is (oui)
+  :iter_journald_json() -> entry dict;
+  :parse_auth_event(entry);
+  if (ev == None ?) then (oui)
+    :ignore;
+  else (non)
+    :detector.feed(ev);
+    if (alert == None ?) then (oui)
+      :pas d'alerte;
+    else (non)
+      :insert_alert();
+      :insert_report(json);
+      :print alerte;
+    endif
+  endif
+endwhile (non)
+
+:Fermer DB;
+stop
+@enduml

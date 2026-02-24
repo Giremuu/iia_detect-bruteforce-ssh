@@ -3,7 +3,7 @@
 ## Présentation
 
 Ce projet est un outil de détection de tentatives de bruteforce SSH à partir des journaux système `journald` sous Debian 13.  
-Il analyse les échecs d’authentification SSH sur une fenêtre temporelle glissante et génère des alertes lorsqu’un comportement suspect est identifié.
+Il analyse les échecs d’authentification SSH et génère des alertes lorsqu’un comportement suspect est identifié.
 
 **Objectifs pédagogiques :**
 - Exploiter les logs système pour la détection d’incidents de sécurité  
@@ -83,11 +83,16 @@ La modélisation des données suit la méthode Merise avec les entités principa
 - Alerte
 - Hôte
 
-Livrables :
-Dans le dossier "GestionSI"
-- MCD (Modèle Conceptuel de Données)
-- MLD (Modèle Logique de Données)
-- MPD (Modèle Physique de Données)
+Livrables Gestion SI :
+- MCD avec drawIO
+- MLD avec drawIO
+- MPD avec drawIO
+- MCT avec PlantUML
+- Diagramme de classes (class_diagramm) avec PlantUML
+- Diagramme d’activité (activity_follow) avec PlantUML
+- Diagramme d'utilisation (usecase) avec PlantUML
+
+`plantuml -tpng *.puml`
 
 ---
 
@@ -99,3 +104,4 @@ Dans le dossier "GestionSI"
 - PyTest : framework de tests du code
 - Ruff : linting et formatage du code
 - Doxyfile : documentations (```doxygen Doxyfile``` - placé en gitignore pour ne pas surchargé le repo)
+- PlantUML : documentations / schémas

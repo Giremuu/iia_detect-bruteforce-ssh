@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+
+actor "Administrateur" as Admin
+actor "Système (journald)" as Journal
+actor "Base de données" as DB
+
+rectangle "SSH Bruteforce Detector" {
+  usecase "Configurer l’application\n(YAML + .env)" as UC1
+  usecase "Collecter les logs SSH\n(journalctl -f)" as UC2
+  usecase "Parser un log en AuthEvent" as UC3
+  usecase "Détecter un bruteforce\n(sliding window)" as UC4
+  usecase "Enregistrer alerte + rapport" as UC5
+  usecase "Afficher une alerte console" as UC6
+}
+
+Admin --> UC1
+Journal --> UC2
+UC2 --> UC3
+UC3 --> UC4
+UC4 --> UC5
+UC4 --> UC6
+DB <-- UC5
+
+@enduml

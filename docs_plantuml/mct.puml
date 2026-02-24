@@ -1,0 +1,19 @@
+@startuml
+left to right direction
+
+rectangle "MCT - Détection bruteforce SSH" {
+  [E1: Log SSH reçu]
+  [T1: Parser le log]
+  [R1: AuthEvent FAIL]
+}
+
+[E1: Log SSH reçu] --> [T1: Parser le log]
+[T1: Parser le log] --> [R1: AuthEvent FAIL]
+
+[R1: AuthEvent FAIL] --> [T2: Mettre à jour fenêtre glissante]
+[T2: Mettre à jour la fenètre de tmp] --> [R2: Compteur par IP]
+
+[R2: Compteur par IP] --> [T3: Créer alerte + rapport]
+[T3: Créer alerte + rapport] --> [R3: Alerte persistée + notification]
+
+@enduml
