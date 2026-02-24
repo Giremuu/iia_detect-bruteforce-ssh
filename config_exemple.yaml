@@ -16,3 +16,4 @@ host:
   adresse_mac: "00:00:00:00:00:00"
   adresse_ip: "127.0.0.1"
   os: "Debian 13"
+  
