@@ -40,7 +40,7 @@ class SlidingWindowDetector:
             q.popleft()
 
         # Construction du rapport d’alerte
-        if len(q) == self.cfg.threshold:
+        if len(q) >= self.cfg.threshold:
             payload = {
                 "type": "BRUTEFORCE_SSH_DETECTED",
                 "ip": ev.ip,

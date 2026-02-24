@@ -1,8 +1,8 @@
 import pytest
 from datetime import datetime, timedelta, timezone
 
-from src.detector import RuleConfig, SlidingWindowDetector
-from src.parser import AuthEvent
+from ssh_detector.detector import RuleConfig, SlidingWindowDetector
+from ssh_detector.parser import AuthEvent
 
 
 def _ev(ts, ip="1.2.3.4", user="u", outcome="FAIL", msg=""):

@@ -5,16 +5,13 @@ en dictionnaire Python et les fournit au reste du programme
 
 import json
 import subprocess
-from typing import Dict, Iterator, Any
 
 
-def iter_journald_json(
-    unit: str = "ssh", follow: bool = True
-) -> Iterator[Dict[str, Any]]:
-    # Construction de la commande pour journalctl
+def iter_journald_json(unit: str = "ssh", follow: bool = True):
     cmd = ["journalctl", "-u", unit, "-o", "json"]
     if follow:
         cmd.insert(1, "-f")
+        cmd += ["-n", "0"]
 
     # Lancement du process
     p = subprocess.Popen(

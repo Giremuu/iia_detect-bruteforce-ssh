@@ -12,11 +12,11 @@ Programme principal qui :
 import argparse
 import os
 
-from src.config import load_config
-from src.journald_reader import iter_journald_json
-from src.parser import parse_auth_event
-from src.detector import SlidingWindowDetector, RuleConfig
-from src.db import (
+from src.ssh_detector.config import load_config
+from src.ssh_detector.journald_reader import iter_journald_json
+from src.ssh_detector.parser import parse_auth_event
+from src.ssh_detector.detector import SlidingWindowDetector, RuleConfig
+from src.ssh_detector.db import (
     Database,
     ensure_host,
     get_or_create_rule,
@@ -80,32 +80,35 @@ def main() -> int:
         )
 
         # Boucle : lecture des logs > parsing > détection
-        for entry in iter_journald_json(unit=cfg.journald.unit, follow=follow):
-            ev = parse_auth_event(entry)
-            if ev is None:
-                continue
+        try:
+            for entry in iter_journald_json(unit=cfg.journald.unit, follow=follow):
+                ev = parse_auth_event(entry)
+                if ev is None:
+                    continue
 
-            alert = detector.feed(ev)
-            if alert is None:
-                continue
+                alert = detector.feed(ev)
+                if alert is None:
+                    continue
 
-            # Si alerte : insertion en DB
-            id_alerte = insert_alert(
-                db,
-                id_hote=id_hote,
-                id_regle=id_regle,
-                date_declenchement=alert["date_declenchement"],
-            )
-            insert_report(
-                db,
-                id_alerte=id_alerte,
-                fmt="json",
-                donnees=alert["report_json"],
-            )
+                # Si alerte : insertion en DB
+                id_alerte = insert_alert(
+                    db,
+                    id_hote=id_hote,
+                    id_regle=id_regle,
+                    date_declenchement=alert["date_declenchement"],
+                )
+                insert_report(
+                    db,
+                    id_alerte=id_alerte,
+                    fmt="json",
+                    donnees=alert["report_json"],
+                )
 
-            print(
-                f"[ALERTE] Bruteforce suspect IP={alert['ip']} count={alert['count']}"
-            )
+                print(
+                    f"[ALERTE] Bruteforce suspect IP={alert['ip']} count={alert['count']}"
+                )
+        except KeyboardInterrupt:
+            print("\nArrêt demandé.")
 
     return 0
 

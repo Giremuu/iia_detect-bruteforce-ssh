@@ -11,6 +11,7 @@ __pycache__/
 .venv/
 venv/
 ENV/
+.venv/**
 
 # env/secrets
 .env
@@ -29,5 +30,4 @@ reports/
 # Doxygen
 html/
 latex/
-docs/
 doxygen/
