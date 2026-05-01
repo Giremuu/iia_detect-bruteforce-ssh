@@ -1,107 +1,171 @@
-# Détecteur de Bruteforce SSH (Blue Team)
+# iia_detect-bruteforce-ssh
 
-## Présentation
+![Version](https://img.shields.io/badge/version-V1-purple)
+![License](https://img.shields.io/badge/license-MIT-yellow)
+![Stack](https://img.shields.io/badge/stack-Python%20%7C%20MariaDB-lightgrey)
 
-Ce projet est un outil de détection de tentatives de bruteforce SSH à partir des journaux système `journald` sous Debian 13.  
-Il analyse les échecs d’authentification SSH et génère des alertes lorsqu’un comportement suspect est identifié.
+School project (Blue Team) about an SSH brute-force detector that reads `journald` logs on Debian 13, applies a sliding window detection rule, and stores alerts in a MariaDB database. Detection only - no remediation, no blocking.
 
-**Objectifs pédagogiques :**
-- Exploiter les logs système pour la détection d’incidents de sécurité  
-- Mettre en œuvre une logique de détection par règles  
-- Appliquer des méthodes de modélisation (Merise) et de conception objet (UML) dans le cadre du cours *Gestion des SI*
+> **Limitations:** Debian 13 only, `journald` as the sole log source, single IP-based detection rule, MariaDB/MySQL only.
 
 ---
 
-## Fonctionnalités
+## Overview
 
-- Collecte des logs SSH via `journalctl`  
-- Parsing des événements d’authentification (succès / échecs)  
-- Détection de bruteforce basée sur des seuils configurables  
-- Génération et stockage d’alertes en base de données  
+```mermaid
+flowchart LR
+    JD["journald (ssh unit)"] --> RDR["journald_reader.py"]
+    RDR --> PRS["parser.py - parse auth events"]
+    PRS --> DET["detector.py - sliding window"]
+    DET -->|"threshold reached"| DB["MariaDB - alerts + reports"]
+    DET -->|"threshold reached"| OUT["stdout alert"]
+```
 
----
+### Detection rule
 
-## Environnement et prérequis
+- **Threshold:** 5 failed authentication attempts from the same IP
+- **Window:** 120 seconds
+- **Action:** insert alert and JSON report in the database, print to stdout
 
-- **OS** : Debian 13  
-- **Service** : `openssh-server` actif  
-- **Accès logs** : droits `sudo` pour la lecture de `journald`  
-- **Langage** : Python 3  
-- **Base de données** : MariaDB / MySQL (accès via utilisateur dédié)
+### Project structure
 
----
-
-## Sources de logs
-
-Le projet s’appuie sur `journald` (par défaut sous Debian 13) :
-
-- Consultation des logs SSH :  
-```bash
-sudo journalctl -u ssh
-sudo journalctl -f -u ssh
-sudo journalctl -u ssh -o json
+```
+iia_detect-bruteforce-ssh/
+├── main.py                    - Entry point (CLI: --follow / --once)
+├── config_exemple.yaml        - Config template
+├── .env_exemple               - Environment variables template
+├── src/ssh_detector/
+│   ├── config.py              - Config loader
+│   ├── journald_reader.py     - journald JSON stream reader
+│   ├── parser.py              - SSH auth event parser
+│   ├── detector.py            - Sliding window detection logic
+│   └── db.py                  - Database access (host, rule, alert, report)
+├── tests/
+│   └── test_detector.py
+└── docs/
+    ├── docs_md/               - Setup and architecture notes
+    └── docs_plantuml/         - Merise and UML diagrams (MCD, MLD, MCT, class, activity, usecase)
 ```
 
 ---
 
-## Règle de détection
-Condition :
-- 5 tentatives d’authentification échouées depuis la même adresse IP en moins de 2 minutes
+## Usage
 
-Action :
-- Génération d’une alerte de type BRUTEFORCE_SSH_DETECTED
-- Enregistrement de l’alerte en base de données
+### Prerequisites
 
----
+- Debian 13 with `openssh-server` running
+- Python 3 with a virtual environment
+- MariaDB / MySQL with a dedicated user
+- `sudo` access to read `journald`
 
-## Procédure de test
-Si vous avez cloné ce repo :
-- modifié et renommé le .env en fonction de votre environnement
-- modifié et renommé le config.yaml en fonction de votre environnement
-- Lancer le détecteur en mode infini :
+### Setup
+
 ```bash
+# Copy and fill the config file
+cp config_exemple.yaml config.yaml
+
+# Copy and fill the environment file
+cp .env_exemple .env
+
+# Install dependencies
+pip install -r requirements.txt
+```
+
+### Run
+
+```bash
+# Continuous mode - follows journald in real time
 sudo -E .venv/bin/python main.py --follow
+
+# One-shot mode - reads current logs then exits (suitable for cron)
+sudo -E .venv/bin/python main.py --once
 ```
-- Générer des échecs d’authentification SSH depuis la même machine ou une autre :
+
+### Test the detection
+
 ```bash
+# Trigger failed SSH attempts from the same machine
 ssh fakeuser@localhost
 ```
 
-Vérifier :
-- Les événements sont visibles dans journalctl
-- Une alerte est générée après dépassement du seuil
-- L’alerte est enregistrée en base de données
+Then check:
+- Events appear in `journalctl -u ssh`
+- An alert is printed to stdout after the threshold is reached
+- The alert is stored in the database
 
 ---
 
-## Modélisation
+## Specificities
 
-La modélisation des données suit la méthode Merise avec les entités principales suivantes :
-- Événement
-- Adresse IP
-- Règle
-- Alerte
-- Hôte
+### Configuration
 
-Livrables Gestion SI :
-- MCD avec drawIO
-- MLD avec drawIO
-- MPD avec drawIO
-- MCT avec PlantUML
-- Diagramme de classes (class_diagramm) avec PlantUML
-- Diagramme d’activité (activity_follow) avec PlantUML
-- Diagramme d'utilisation (usecase) avec PlantUML
+`config.yaml`:
 
-`plantuml -tpng *.puml`
+```yaml
+journald:
+  unit: ssh
+  follow: true
+
+detection:
+  threshold: 5        - Number of failed attempts to trigger an alert
+  window_seconds: 120 - Detection window in seconds
+
+db:
+  host: "${DB_HOST}"
+  user: "${DB_USER}"
+  database: "${DB_NAME}"
+
+host:
+  adresse_mac: "00:00:00:00:00:00"
+  adresse_ip: "127.0.0.1"
+  os: "Debian 13"
+```
+
+`.env`:
+
+```
+DB_HOST=127.0.0.1
+DB_USER=ssh_user
+DB_PASSWORD=CHANGE_ME
+DB_NAME=ssh_bruteforce
+```
+
+### School deliverables (Gestion des SI)
+
+Merise and UML models are available in `docs/docs_plantuml/`:
+
+| Diagram | Format |
+|---|---|
+| MCD - Conceptual data model | PNG |
+| MLD - Logical data model | PNG |
+| MPD - Physical data model | SQL |
+| MCT - Conceptual processing model | PNG |
+| Class diagram | PNG |
+| Activity diagram (`--follow` mode) | PNG |
+| Use case diagram | PNG |
+
+Regenerate diagrams from sources:
+
+```bash
+plantuml -tpng docs/docs_plantuml/*.puml
+```
+
+### Stack and tooling
+
+| Tool | Usage |
+|---|---|
+| Python 3 | Main language |
+| MariaDB / MySQL | Alert storage |
+| journald | Log source |
+| pytest | Unit tests |
+| Ruff | Linting and formatting |
+| PlantUML | UML and Merise diagrams |
+| Draw.io | MCD / MLD / MPD schemas |
+| Doxygen | Code documentation (gitignored) |
+| GitHub Actions | CI - lint and tests |
 
 ---
 
-## Stack / Outils (AGL) :
-- GitHub : gestion de version et CI/CD avec Github Action
-- VS Code : édition du code
-- Draw.io : schémas et modélisation
-- Python : langage principal
-- PyTest : framework de tests du code
-- Ruff : linting et formatage du code
-- Doxyfile : documentations (```doxygen Doxyfile``` - placé en gitignore pour ne pas surchargé le repo)
-- PlantUML : documentations / schémas
+## License
+
+MIT
